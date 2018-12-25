@@ -1,4 +1,5 @@
 namespace api
+open CommandHandler
 
 module HttpHandlers =
 
@@ -6,7 +7,13 @@ module HttpHandlers =
     open FSharp.Control.Tasks.V2.ContextInsensitive
     open Giraffe
     open api.Models
+    open api.ReadSide.ReadSide
 
+    let private pipleline command = 
+        command 
+        |> handleCommand
+        |> List.iter handleEvent
+        
     let handleGetHello =
         fun (next : HttpFunc) (ctx : HttpContext) ->
             task {

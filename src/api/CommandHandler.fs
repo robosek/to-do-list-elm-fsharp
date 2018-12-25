@@ -88,24 +88,3 @@ module CommandHandler =
         |> Array.map(Mapping.toStoreEvent)
         |> EventStore.saveEvents
         |> ignore
-
-    let handleCommand command = 
-        let currentState = getCurrentState()
-        let newEvents = command |> taskAggregate.Execute currentState
-        newEvents |> Array.ofList |> append
-        newEvents
-
-    let handleEventToConsole event = 
-        match event with
-        | TaskAdded args -> printfn "New task added: %s" args.Name
-        | TaskCompleted args -> printfn "Task completed: %i" args.Id
-        | TaskCleared -> printfn "All task removed"
-        | _ -> ()
-
-    let handleEvent event =
-        event |> handleEventToConsole
-
-    let pipleline command = 
-        command 
-        |> handleCommand
-        |> List.iter handleEvent
