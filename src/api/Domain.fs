@@ -4,23 +4,24 @@ open System
 
 module Domain =
 
-    module CmdArgs = 
+    module CmdArgs =
+
         type AddTask = {
-            Id: int
+            Id: string
             Name: string
             DueDate: DateTime option
         }
 
         type RemoveTask = {
-            Id: int
+            Id: string
         }
 
         type CompleteTask = {
-            Id: int
+            Id: string
         }
 
         type ChangeTaskDueDate = {
-            Id: int
+            Id: string
             DueDate: DateTime option
         }
 
@@ -39,7 +40,7 @@ module Domain =
         | TaskDueDateChanged of CmdArgs.ChangeTaskDueDate
 
     type Task = {
-        Id: int
+        Id: string
         Name: string
         DueDate: DateTime option
         IsComplete: bool
@@ -50,7 +51,7 @@ module Domain =
     } with static member Init = {Tasks = []}
 
     type Argument = {
-        Id: int
+        Id: string
         Name: string
         DueDate: string
     }

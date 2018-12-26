@@ -1,5 +1,8 @@
 namespace api
-open CommandHandler
+
+open api.TaskStore
+open api.Domain.Domain
+open api.CommandHandler
 
 module HttpHandlers =
 
@@ -7,26 +10,89 @@ module HttpHandlers =
     open FSharp.Control.Tasks.V2.ContextInsensitive
     open Giraffe
     open api.Models
-    open api.ReadSide.ReadSide
-
-    let private pipleline command = 
+    open api.ReadSide
+    
+    let private pipeline command = 
         command 
-        |> handleCommand
-        |> List.iter handleEvent
-        
-    let handleGetHello =
-        fun (next : HttpFunc) (ctx : HttpContext) ->
-            task {
-                let response = {
-                    Text = "Hello world, from Giraffe!"
-                }
-                return! json response next ctx
-            }
-    let handleGetHello2 =
+        |> CommandHandler.handleCommand
+        |> Result.bind(ReadSide.handleEvent)
+
+    let getAllTasks =
         fun (next: HttpFunc) (ctx: HttpContext) ->
             task {
-                let response ={
-                    Text = "Hello World 2 master!"
-                }
-                return! json response next ctx
+                let resultTasks = TaskStore.loadTasks()
+                
+                match resultTasks with
+                | Ok tasks -> return! json tasks next ctx
+                | Error message -> return! json message next ctx
+            }
+    
+    let addTask =
+        fun (next: HttpFunc) (ctx: HttpContext) ->
+            task {
+                let! addTaskDto = ctx.BindJsonAsync<AddTaskDto>()
+                let newId = System.Guid.NewGuid().ToString()
+                let addTaskArgs = {CmdArgs.AddTask.Id = newId
+                                   CmdArgs.AddTask.Name = addTaskDto.Name
+                                   CmdArgs.AddTask.DueDate = Helpers.Helpers.tryConvertToDateTime addTaskDto.DueDate}
+                let executionResult = pipeline (AddTask(addTaskArgs))
+                
+                match executionResult with
+                | Ok _ -> ctx.SetStatusCode 201
+                          return! json newId next ctx
+                | Error message -> ctx.SetStatusCode 400
+                                   return! json message next ctx
+            }
+    
+    let updateTaskDueDate = 
+        fun (next: HttpFunc) (ctx: HttpContext) ->
+            task {
+                let! updateTaskDto = ctx.BindJsonAsync<UpdateTaskDueDateDto>()
+                let updateTaskArgs = {CmdArgs.ChangeTaskDueDate.Id = updateTaskDto.Id;  CmdArgs.ChangeTaskDueDate.DueDate = Helpers.Helpers.tryConvertToDateTime updateTaskDto.DueDate}
+                let executionResult = pipeline (ChangeTaskDueDate(updateTaskArgs))
+                
+                match executionResult with
+                | Ok _ -> ctx.SetStatusCode 202
+                          return! next ctx
+                | Error message -> ctx.SetStatusCode 400
+                                   return! json message next ctx
+            }
+    
+    let completeTask = 
+        fun (next: HttpFunc) (ctx: HttpContext) ->
+            task {
+                let! updateTaskDto = ctx.BindJsonAsync<CompleteTaskDto>()
+                let updateTaskArgs = {CmdArgs.CompleteTask.Id = updateTaskDto.Id; }
+                let executionResult = pipeline (CompleteTask(updateTaskArgs))
+                
+                match executionResult with
+                | Ok _ -> ctx.SetStatusCode 201
+                          return! next ctx
+                | Error message -> ctx.SetStatusCode 400
+                                   return! json message next ctx
+            }
+
+    let removeAllTasks =
+        fun (next: HttpFunc) (ctx: HttpContext) ->
+            task {
+                let executionResult = pipeline ClearAllTasks
+
+                match executionResult with
+                | Ok _ -> ctx.SetStatusCode 202
+                          return! next ctx
+                | Error message -> ctx.SetStatusCode 400
+                                   return! json message next ctx
+            }
+
+    let removeTask (removeTaskDto: RemoveTaskDto) =
+        fun (next: HttpFunc) (ctx: HttpContext) ->
+            task {
+                let removeTaskArgs = {CmdArgs.RemoveTask.Id = removeTaskDto.Id; }
+                let executionResult = pipeline (RemoveTask(removeTaskArgs))
+                
+                match executionResult with
+                | Ok _ -> ctx.SetStatusCode 201
+                          return! next ctx
+                | Error message -> ctx.SetStatusCode 400
+                                   return! json message next ctx
             }

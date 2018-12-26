@@ -8,6 +8,7 @@ open Microsoft.Extensions.Logging
 open Microsoft.Extensions.DependencyInjection
 open Giraffe
 open api.HttpHandlers
+open api.Models
 
 // ---------------------------------
 // Web app
@@ -17,13 +18,22 @@ let webApp =
     choose [
         subRoute "/api"
             (choose [
-                GET >=> choose [
-                    route "/hello" >=> handleGetHello
-                ];
-                GET >=> choose [
-                    route "/hello2" >=> handleGetHello2
+                GET >=> choose[
+                    route "/tasks" >=> getAllTasks
+                ]
+                POST >=> choose[
+                    route "/task" >=> addTask
+                ]
+                PUT >=> choose[
+                    route "/task/date" >=> updateTaskDueDate;
+                    route "/task/complete" >=> completeTask;
+                ]
+                DELETE >=> choose[
+                    route "/tasks" >=> removeAllTasks;
+                    routeBind<RemoveTaskDto> "/tasks/{id}" removeTask
                 ]
             ])
+            
         setStatusCode 404 >=> text "Not Found" ]
 
 // ---------------------------------

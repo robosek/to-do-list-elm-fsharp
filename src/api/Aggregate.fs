@@ -4,43 +4,43 @@ open api.Domain.Domain
 open api.Helpers
 
 module Aggregate = 
-    let onlyIfTaskDoesntAlreadyExist (state:State) id =
-        match Helpers.maybeTask state id with
-        | Some _ -> failwith "Task already exists"
-        | None -> state
+    let onlyIfTaskDoesntAlreadyExist (state:State) name =
+        match Helpers.maybeTaskByName state name with
+        | Some _ -> Error("Task already exists")
+        | None -> Ok state
 
     let onlyIfTaskExists (state:State) id = 
-        match Helpers.maybeTask state id with
-        | Some task -> task
-        | None -> failwith "There are no task with provided id"
+        match Helpers.maybeTaskById state id with
+        | Some task -> Ok task
+        | None -> Error("There are no task with provided id")
 
-    let onlyIfNotAlreadyFinished (task:Task) = 
-        match task.IsComplete with
-        | true -> failwith "Task is already finished"
-        | false -> task
+    let onlyIfNotAlreadyFinished (resultTask:Result<Task,string>) =
+        resultTask 
+        |> Result.bind(fun task ->  match task.IsComplete with
+                                    | false -> Ok(task)
+                                    | true -> Error("Task not finished"))
+
 
     let execute state command = 
-        let event = 
-            match command with 
-            | AddTask args -> args.Id
-                              |> onlyIfTaskDoesntAlreadyExist state
-                              |> (fun _ -> TaskAdded args)
-            | RemoveTask args -> args.Id
-                                 |> onlyIfTaskExists state
-                                 |> (fun _ -> TaskRemoved args)
-            | ClearAllTasks -> TaskCleared
-            | CompleteTask args -> args.Id
-                                   |> onlyIfTaskExists state
-                                   |> (fun _ -> TaskCompleted args)
-            | ChangeTaskDueDate args -> args.Id
-                                        |> (onlyIfTaskExists state >> onlyIfNotAlreadyFinished)
-                                        |> (fun _ -> TaskDueDateChanged args)
-        event |> List.singleton
+        match command with 
+        | AddTask args -> args.Name
+                          |> onlyIfTaskDoesntAlreadyExist state
+                          |> Result.bind(fun _ -> Ok(TaskAdded args))
+        | RemoveTask args -> args.Id
+                             |> onlyIfTaskExists state
+                             |> Result.bind(fun _ -> Ok(TaskRemoved args)) 
+        | ClearAllTasks -> Ok TaskCleared
+        | CompleteTask args -> args.Id
+                               |> onlyIfTaskExists state
+                               |> Result.bind(fun _ -> Ok(TaskCompleted args)) 
+        | ChangeTaskDueDate args -> args.Id
+                                    |> (onlyIfTaskExists state >> onlyIfNotAlreadyFinished)
+                                    |> Result.bind(fun _ -> Ok(TaskDueDateChanged args))
 
     let apply state event =
         match event with
         | TaskAdded args -> 
-            let newTask = { Id = args.Id 
+            let newTask = { Id = args.Id
                             Name = args.Name
                             DueDate = args.DueDate
                             IsComplete = false }
@@ -65,7 +65,7 @@ module Aggregate =
     type Aggregate<'state,'command,'event> = {
         Init: 'state
         Apply: 'state -> 'event -> 'state
-        Execute: 'state -> 'command -> 'event list 
+        Execute: 'state -> 'command -> Result<'event,string> 
     }
 
     let taskAggregate = {

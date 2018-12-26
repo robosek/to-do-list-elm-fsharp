@@ -4,8 +4,11 @@ open api.Domain.Domain
 open System
 
 module Helpers = 
-    let maybeTask (state:State) id =
+    let maybeTaskById (state:State) id =
         state.Tasks |> List.tryFind(fun task -> task.Id = id)
+        
+    let maybeTaskByName (state:State) name =
+        state.Tasks |> List.tryFind(fun task -> task.Name = name)
 
     let tryConvertToDateTime (dateTimeText:string) =
         try 

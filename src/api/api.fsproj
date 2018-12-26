@@ -13,6 +13,7 @@
     <Compile Include="Helpers.fs" />
     <Compile Include="Aggregate.fs" />
     <Compile Include="EventStore.fs" />
+    <Compile Include="TaskStore.fs" />
     <Compile Include="CommandHandler.fs" />
     <Compile Include="ReadSide.fs" />
     <Compile Include="Models.fs" />

@@ -13,5 +13,5 @@ module EventStore =
     let saveEvents (events:StoreEvent[]) =
         loadEvents()
         |> fun storedEvents -> [|events; storedEvents|] |> Array.concat
-        |> fun allEvents -> JsonConvert.SerializeObject allEvents
+        |> JsonConvert.SerializeObject
         |> fun eventsJson -> File.WriteAllText("events.json", eventsJson)

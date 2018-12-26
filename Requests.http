@@ -1,0 +1,36 @@
+###Add new task
+POST http://localhost:5000/api/task
+Content-Type: application/json
+
+{
+    "Name": "Wash a car2",
+    "DueDate": "2018-02-03"
+}
+
+###Update task due date
+PUT http://localhost:5000/api/task/date
+Content-Type: application/json
+
+{
+    "Id": "82e39b1d-b79b-4d76-a53b-cc8a42052984",
+    "DueDate": "2018-02-05"
+}
+
+###Complete task
+PUT http://localhost:5000/api/task/complete
+Content-Type: application/json
+
+{
+    "Id": "82e39b1d-b79b-4d76-a53b-cc8a42052984"
+}
+
+###Remove task
+DELETE http://localhost:5000/api/task/82e39b1d-b79b-4d76-a53b-cc8a42052984
+Content-Type: application/json
+
+###Delete all tasks
+DELETE  http://localhost:5000/api/tasks
+Content-Type: application/json
+
+###Get all tasks
+GET http://localhost:5000/api/tasks
