@@ -1,9 +1,9 @@
-##Elm + F# Giraffe
+## Elm + F# Giraffe
 
-###Frontend: Elm
+### Frontend: Elm
 Tasks list implementation using Elm
 
-###Backend: CQRS nad Event Sourcing implementation in F# with Giraffe
+### Backend: CQRS nad Event Sourcing implementation in F# with Giraffe
 TODO API with endpoints:
 - `POST` new Task
 - `DELETE` all Tasks
