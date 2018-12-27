@@ -25,7 +25,7 @@ module CommandHandler =
             | TaskCompleted args -> {Name = "TaskCompleted"; Data = {Id = args.Id; Name = ""; DueDate = "" }} 
             | TaskDueDateChanged args -> {Name = "TaskDueDateChanged"; Data = {Id = args.Id; Name = ""; DueDate =  if args.DueDate.IsSome then args.DueDate.ToString() else "" }}
 
-    let getCurrentState () = 
+    let getCurrentState () =
         EventStore.loadEvents()
         |> Array.map(Mapping.toDomainEvent)
         |> Array.fold taskAggregate.Apply taskAggregate.Init

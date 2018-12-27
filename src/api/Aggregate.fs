@@ -2,6 +2,7 @@ namespace api.Aggregate
 
 open api.Domain.Domain
 open api.Helpers
+open api.TaskStore
 
 module Aggregate = 
     let onlyIfTaskDoesntAlreadyExist (state:State) name =
@@ -12,14 +13,13 @@ module Aggregate =
     let onlyIfTaskExists (state:State) id = 
         match Helpers.maybeTaskById state id with
         | Some task -> Ok task
-        | None -> Error("There are no task with provided id")
+        | None -> Error("There is no task with provided id")
 
     let onlyIfNotAlreadyFinished (resultTask:Result<Task,string>) =
         resultTask 
         |> Result.bind(fun task ->  match task.IsComplete with
                                     | false -> Ok(task)
                                     | true -> Error("Task not finished"))
-
 
     let execute state command = 
         match command with 
@@ -69,7 +69,9 @@ module Aggregate =
     }
 
     let taskAggregate = {
-        Init = State.Init
+        Init = {Tasks =  match TaskStore.loadTasks() with
+                         | Ok tasks -> tasks |> List.ofArray
+                         | Error _ -> failwith "Error during task loading"}
         Apply = apply
         Execute = execute
     }

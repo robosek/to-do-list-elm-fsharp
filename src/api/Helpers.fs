@@ -15,3 +15,8 @@ module Helpers =
             Some(Convert.ToDateTime(dateTimeText))
         with
         | _ -> None
+    
+    let tryConvertToString (dateTime:DateTime option) =
+       match dateTime with
+       | Some date -> date.ToShortDateString()
+       | None -> ""

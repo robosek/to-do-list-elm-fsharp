@@ -11,6 +11,7 @@ module HttpHandlers =
     open Giraffe
     open api.Models
     open api.ReadSide
+    open api.Helpers
     
     let private pipeline command = 
         command 
@@ -23,7 +24,9 @@ module HttpHandlers =
                 let resultTasks = TaskStore.loadTasks()
                 
                 match resultTasks with
-                | Ok tasks -> return! json tasks next ctx
+                | Ok tasks -> let tasksDto = tasks |> Array.map(fun task -> {TaskDto.Id = task.Id; TaskDto.Name = task.Name; TaskDto.IsComplete = task.IsComplete;
+                                                                             TaskDto.DueDate = Helpers.tryConvertToString task.DueDate})
+                              return! json tasksDto next ctx
                 | Error message -> return! json message next ctx
             }
     

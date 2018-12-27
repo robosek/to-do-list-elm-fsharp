@@ -49,9 +49,10 @@ let errorHandler (ex : Exception) (logger : ILogger) =
 // ---------------------------------
 
 let configureCors (builder : CorsPolicyBuilder) =
-    builder.WithOrigins("http://localhost:8080")
+    builder.WithOrigins("http://localhost")
            .AllowAnyMethod()
            .AllowAnyHeader()
+           .AllowAnyOrigin()
            |> ignore
 
 let configureApp (app : IApplicationBuilder) =
@@ -59,7 +60,6 @@ let configureApp (app : IApplicationBuilder) =
     (match env.IsDevelopment() with
     | true  -> app.UseDeveloperExceptionPage()
     | false -> app.UseGiraffeErrorHandler errorHandler)
-        .UseHttpsRedirection()
         .UseCors(configureCors)
         .UseGiraffe(webApp)
 

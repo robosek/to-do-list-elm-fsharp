@@ -21,3 +21,11 @@ type CompleteTaskDto = {
 type RemoveTaskDto = {
     Id : string
 }
+
+[<CLIMutable>]
+type TaskDto = {
+    Id: string
+    Name: string
+    DueDate: string
+    IsComplete: bool
+}
