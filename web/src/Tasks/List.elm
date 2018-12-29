@@ -1,10 +1,11 @@
 module Tasks.List exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, placeholder, type_, value)
 import Msgs exposing (Msg(..))
 import Models exposing (Task)
 import RemoteData exposing (WebData)
+import Debug
 
 view : WebData(List Task) -> Html Msg
 view tasks =
@@ -34,7 +35,7 @@ maybeList response =
             list tasks
 
         RemoteData.Failure error ->
-            text (toString error)
+            text (Debug.toString error)
 
 
 list : List Task -> Html Msg
@@ -45,9 +46,9 @@ list tasks =
                 [ tr []
                     [ 
                       th [] [ text "Name" ]
-                    , th [] [ text "DueDate" ]
                     , th [] [ text "IsCompleted" ]
                     , th [] [ text "Complete it!" ]
+                    , th [] [ text "Due date" ]
                     ]
                 ]
             , tbody [] (List.map taskRow tasks)
@@ -60,8 +61,8 @@ taskRow task =
     tr []
         [ 
           td [] [ text task.name ]
-        , td [] [ text task.dueDate ]
-        , td [] [ text (toString task.isCompleted)]
+        , td [] [ text (if task.isCompleted then "Yes" else "No")]
         , td [] [ button [][text "complete"]]
+        , td [] [ div[][input[value task.dueDate, type_ "text"][], button [][text "Change"]]]
         , td [] []
         ]

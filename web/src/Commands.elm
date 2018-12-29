@@ -3,16 +3,17 @@ module Commands exposing (..)
 import Http
 import Json.Encode as Encode
 import Json.Decode as Decode
-import Json.Decode.Pipeline exposing (decode, required)
 import Msgs exposing (Msg)
 import Models exposing (Task, CompleteTask)
-import RemoteData
+import RemoteData exposing (WebData)
 
 fetchTasks : Cmd Msg
 fetchTasks =
-    Http.get fetchTasksUrl tasksDecoder
-        |> RemoteData.sendRequest
-        |> Cmd.map Msgs.OnFetchTasks
+    Http.get
+        {
+            url = fetchTasksUrl,
+            expect = Http.expectJson Msgs.OnFetchTasks tasksDecoder  
+        }
 
 fetchTasksUrl : String
 fetchTasksUrl =
@@ -30,8 +31,9 @@ tasksDecoder =
 
 taskDecoder : Decode.Decoder Task
 taskDecoder =
-    decode Task
-        |> required "id" Decode.string
-        |> required "name" Decode.string
-        |> required "dueDate" Decode.string
-        |> required "isComplete" Decode.bool
+    Decode.map4
+        Task
+        (Decode.field "id" Decode.string)
+        (Decode.field "name" Decode.string)
+        (Decode.field "dueDate" Decode.string)
+        (Decode.field "isComplete" Decode.bool)

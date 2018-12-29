@@ -6,6 +6,7 @@ import Models exposing (Model)
 import Tasks.List
 import Bootstrap.CDN as CDN
 import Bootstrap.Grid as Grid
+import Browser
 
 
 view : Model -> Html Msg

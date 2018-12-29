@@ -6,12 +6,12 @@ import View exposing (view)
 import Update exposing (update)
 import Msgs exposing (Msg(..))
 import Commands exposing (fetchTasks)
+import Browser
 
 -- Model 
-init : (Model, Cmd Msg)
+init : () -> (Model, Cmd Msg)
 
-init  = (initialModel, fetchTasks)
-
+init _ = (initialModel, fetchTasks)
 
 --Subscriptions
 subscriptions: Model -> Sub Msg
@@ -21,7 +21,7 @@ subscriptions model =
 
 --Main 
 main =
-    program
+    Browser.element
         { init = init
         , view = view
         , update = update
