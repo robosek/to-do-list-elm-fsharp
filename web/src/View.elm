@@ -8,7 +8,6 @@ import Bootstrap.CDN as CDN
 import Bootstrap.Grid as Grid
 import Browser
 
-
 view : Model -> Html Msg
 view model =
 
@@ -20,4 +19,4 @@ view model =
 
 page : Model -> Html Msg
 page model =
-    Tasks.List.view model.tasks
+    Tasks.List.view model

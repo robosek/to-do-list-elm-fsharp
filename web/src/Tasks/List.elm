@@ -1,17 +1,21 @@
 module Tasks.List exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class, placeholder, type_, value)
+import Html.Attributes exposing (..)
+import Html.Events exposing (..)
 import Msgs exposing (Msg(..))
-import Models exposing (Task)
+import Models exposing (..)
 import RemoteData exposing (WebData)
 import Debug
+import Tasks.Form exposing (..)
 
-view : WebData(List Task) -> Html Msg
-view tasks =
+view : Model -> Html Msg
+view model =
     div []
-        [ nav
-        , maybeList tasks
+        [ 
+          viewForm model
+        , nav
+        , maybeList model.tasks
         ]
 
 
@@ -19,10 +23,10 @@ nav : Html Msg
 nav =
     div [ class "clearfix mb2 white bg-black" ]
         [ div [ class "left p2" ] [ text "Tasks" ],
-          button [][text "Clear all tasks"] ]
+          button [onClick RemoveAllTasks][text "Clear all tasks"] ]
 
 
-maybeList : WebData(List Task) -> Html Msg
+maybeList : WebData(List TaskDto) -> Html Msg
 maybeList response = 
     case response of
         RemoteData.NotAsked ->
@@ -38,7 +42,7 @@ maybeList response =
             text (Debug.toString error)
 
 
-list : List Task -> Html Msg
+list : List TaskDto -> Html Msg
 list tasks =
     div [ class "p2" ]
         [ table []
@@ -56,13 +60,16 @@ list tasks =
         ]
 
 
-taskRow : Task -> Html Msg
+taskRow : TaskDto -> Html Msg
 taskRow task =
     tr []
         [ 
           td [] [ text task.name ]
         , td [] [ text (if task.isCompleted then "Yes" else "No")]
-        , td [] [ button [][text "complete"]]
-        , td [] [ div[][input[value task.dueDate, type_ "text"][], button [][text "Change"]]]
+        , td [] [ button [onClick (CompleteTask (CompleteTaskDto task.id))][text "Complete"]]
+        , td [] [ 
+                  div[][input[value task.dueDate, type_ "text"][], 
+                  button [onClick (ChangeTaskDueDate (ChangeTaskDueDateDto task.id "2018-02-05"))][text "Change"]]
+                ]
         , td [] []
         ]
