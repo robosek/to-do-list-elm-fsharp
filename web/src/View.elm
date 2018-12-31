@@ -1,22 +1,27 @@
 module View exposing (..)
 
-import Html exposing (Html, div, text)
+import Html exposing (..)
+import Html.Attributes exposing (..)
 import Msgs exposing (Msg(..))
 import Models exposing (Model)
 import Tasks.List
 import Bootstrap.CDN as CDN
 import Bootstrap.Grid as Grid
 import Browser
+import Tasks.Form exposing (..)
 
 view : Model -> Html Msg
 view model =
 
     Grid.container [] [
         CDN.stylesheet,
-        div []
-            [ page model ]
+        div[class "row"][div[class "col align-self-center"]
+        [h1 [class "text-center"][text "To do list"],page model]]
     ]
 
 page : Model -> Html Msg
 page model =
-    Tasks.List.view model
+    div[][
+        viewForm model,
+        Tasks.List.view model
+    ]

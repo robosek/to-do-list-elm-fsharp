@@ -13,18 +13,8 @@ view : Model -> Html Msg
 view model =
     div []
         [ 
-          viewForm model
-        , nav
-        , maybeList model.tasks
+         maybeList model.tasks
         ]
-
-
-nav : Html Msg
-nav =
-    div [ class "clearfix mb2 white bg-black" ]
-        [ div [ class "left p2" ] [ text "Tasks" ],
-          button [onClick RemoveAllTasks][text "Clear all tasks"] ]
-
 
 maybeList : WebData(List TaskDto) -> Html Msg
 maybeList response = 
@@ -45,31 +35,50 @@ maybeList response =
 list : List TaskDto -> Html Msg
 list tasks =
     div [ class "p2" ]
-        [ table []
-            [ thead []
+        [ table [class "table"]
+            [ thead [class "thead-dark"]
                 [ tr []
                     [ 
-                      th [] [ text "Name" ]
-                    , th [] [ text "IsCompleted" ]
-                    , th [] [ text "Complete it!" ]
-                    , th [] [ text "Due date" ]
+                      th [] [ text "What to do?" ]
+                    , th [] [ text "Status" ]
+                    , th [] [ text "Deadline" ]
                     ]
                 ]
             , tbody [] (List.map taskRow tasks)
             ]
         ]
 
+completeButton : TaskDto -> Html Msg
+completeButton taskDto =
+    let 
+        isDisabled = taskDto.isCompleted
+        buttonText = if taskDto.isCompleted then "Completed" else "Complete"
+        buttonClass = if taskDto.isCompleted then "btn btn-info" else "btn btn-success"
+        dto = CompleteTaskDto taskDto.id
+    in 
+    button [onClick (CompleteTask dto), class buttonClass, disabled isDisabled][text buttonText]
+
+taskDescription : String -> Html Msg
+taskDescription description =
+    h5 [][text description]
+
+changeDueDateForm : TaskDto -> Html Msg
+changeDueDateForm taskDto =
+    let 
+        isActive = taskDto.isCompleted
+        dto = ChangeTaskDueDateDto taskDto.id "2018-02-05"
+    in
+    div [class "form-inline"][
+        div[][input[value taskDto.dueDate, type_ "text", class "form-control mx-sm-3 mb-2", disabled isActive][], 
+        button [onClick (ChangeTaskDueDate dto), class "btn btn-primary mb-1", hidden isActive][text "Change"]]
+    ]
+
 
 taskRow : TaskDto -> Html Msg
 taskRow task =
     tr []
         [ 
-          td [] [ text task.name ]
-        , td [] [ text (if task.isCompleted then "Yes" else "No")]
-        , td [] [ button [onClick (CompleteTask (CompleteTaskDto task.id))][text "Complete"]]
-        , td [] [ 
-                  div[][input[value task.dueDate, type_ "text"][], 
-                  button [onClick (ChangeTaskDueDate (ChangeTaskDueDateDto task.id "2018-02-05"))][text "Change"]]
-                ]
-        , td [] []
+          td [] [ taskDescription task.name ]
+        , td [] [ completeButton task ]
+        , td [] [ changeDueDateForm task ]
         ]

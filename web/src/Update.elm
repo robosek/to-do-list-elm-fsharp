@@ -10,7 +10,7 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         OnFetchTasks response ->
-            ( { model | tasks = RemoteData.fromResult(response)}, Cmd.none )
+            ( { model | tasks = RemoteData.fromResult(response), newTaskName = Nothing, newTaskDate = Nothing}, Cmd.none )
         OnCompleteTask _ ->
             (model, fetchTasks)
         OnRemoveAllTasks _ -> 
