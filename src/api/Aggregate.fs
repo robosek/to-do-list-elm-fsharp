@@ -19,7 +19,7 @@ module Aggregate =
         resultTask 
         |> Result.bind(fun task ->  match task.IsComplete with
                                     | false -> Ok(task)
-                                    | true -> Error("Task not finished"))
+                                    | true -> Error("Task is finished. You can't change due date."))
 
     let execute state command = 
         match command with 

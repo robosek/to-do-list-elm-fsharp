@@ -57,5 +57,6 @@ module Domain =
     }
     type StoreEvent = {
        Name: string
+       OperationDate: string
        Data: Argument
     }

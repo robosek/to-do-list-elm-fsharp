@@ -4,6 +4,7 @@ open api.Domain.Domain
 open api.Aggregate.Aggregate
 open api.Helpers
 open api.EventStore
+open System
 
 module CommandHandler =
 
@@ -19,11 +20,11 @@ module CommandHandler =
         
         let toStoreEvent data =
             match data with
-            | TaskAdded args -> {Name = "TaskAdded"; Data = {Id = args.Id; Name = args.Name; DueDate =  if args.DueDate.IsSome then args.DueDate.ToString() else "" }}
-            | TaskRemoved args -> {Name = "TaskRemoved"; Data = {Id = args.Id; Name = ""; DueDate = "" } }
-            | TaskCleared -> { Name = "TaskCleared"; Data = {Id = ""; Name = ""; DueDate =  "" }} 
-            | TaskCompleted args -> {Name = "TaskCompleted"; Data = {Id = args.Id; Name = ""; DueDate = "" }} 
-            | TaskDueDateChanged args -> {Name = "TaskDueDateChanged"; Data = {Id = args.Id; Name = ""; DueDate =  if args.DueDate.IsSome then args.DueDate.ToString() else "" }}
+            | TaskAdded args -> {Name = "TaskAdded"; OperationDate = DateTime.Now.ToString(); Data = {Id = args.Id; Name = args.Name; DueDate =  if args.DueDate.IsSome then args.DueDate.Value.ToShortDateString() else "" }}
+            | TaskRemoved args -> {Name = "TaskRemoved"; OperationDate = DateTime.Now.ToString(); Data = {Id = args.Id; Name = ""; DueDate = ""} }
+            | TaskCleared -> { Name = "TaskCleared";OperationDate = DateTime.Now.ToString();  Data = {Id = ""; Name = ""; DueDate = ""}} 
+            | TaskCompleted args -> {Name = "TaskCompleted"; OperationDate = DateTime.Now.ToString();  Data = {Id = args.Id; Name = ""; DueDate = "" }} 
+            | TaskDueDateChanged args -> {Name = "TaskDueDateChanged"; OperationDate = DateTime.Now.ToString(); Data = {Id = args.Id; Name = ""; DueDate =  if args.DueDate.IsSome then args.DueDate.Value.ToShortDateString() else "" }}
 
     let getCurrentState () =
         EventStore.loadEvents()

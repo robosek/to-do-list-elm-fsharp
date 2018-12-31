@@ -8,7 +8,7 @@ module EventStore =
     let loadEvents() =
         File.ReadAllText "events.json"
         |> JsonConvert.DeserializeObject<StoreEvent[]>
-        |> Array.sortBy(fun task -> task.Data.DueDate)
+        |> Array.sortBy(fun event -> event.OperationDate)
 
     let saveEvents (events:StoreEvent[]) =
         loadEvents()
