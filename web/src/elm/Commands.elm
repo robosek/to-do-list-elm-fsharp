@@ -4,7 +4,7 @@ import Http
 import Json.Encode as Encode
 import Json.Decode as Decode
 import Msgs exposing (Msg)
-import Models exposing (..)
+import Models.Dto exposing (..)
 import RemoteData exposing (WebData)
 
 -- HTTP

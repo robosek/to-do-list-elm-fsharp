@@ -4,10 +4,14 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Msgs exposing (Msg(..))
-import Models exposing (..)
+import Models.Domain exposing (..)
+import Models.Dto exposing (..)
 import RemoteData exposing (WebData)
 import Debug
 import Tasks.Form exposing (..)
+import DatePicker exposing (defaultSettings)
+import Time exposing (Weekday(..), Month(..))
+import Date exposing (Date, day, month, weekday, year)
 
 view : Model -> Html Msg
 view model =
@@ -16,7 +20,7 @@ view model =
          maybeList model.tasks
         ]
 
-maybeList : WebData(List TaskDto) -> Html Msg
+maybeList : WebData(List Task) -> Html Msg
 maybeList response = 
     case response of
         RemoteData.NotAsked ->
@@ -32,7 +36,7 @@ maybeList response =
             text (Debug.toString error)
 
 
-list : List TaskDto -> Html Msg
+list : List Task -> Html Msg
 list tasks =
     div [ class "p2" ]
         [ table [class "table"]
@@ -44,11 +48,11 @@ list tasks =
                     , th [] [ text "Deadline" ]
                     ]
                 ]
-            , tbody [] (List.map taskRow tasks)
+            , tbody [] (List.map taskRow (tasks |> List.sortBy .name))
             ]
         ]
 
-completeButton : TaskDto -> Html Msg
+completeButton : Task -> Html Msg
 completeButton taskDto =
     let 
         isDisabled = taskDto.isCompleted
@@ -62,19 +66,25 @@ taskDescription : String -> Html Msg
 taskDescription description =
     h5 [][text description]
 
-changeDueDateForm : TaskDto -> Html Msg
-changeDueDateForm taskDto =
+changeDueDateForm : Task -> Html Msg
+changeDueDateForm task =
     let 
-        isActive = taskDto.isCompleted
-        dto = ChangeTaskDueDateDto taskDto.id "2018-02-05"
+        isDisabled = task.isCompleted
+        date = Maybe.withDefault (Date.fromCalendarDate 1991 Sep 1) task.dueDate.date
+        dto = ChangeTaskDueDateDto task.id (Date.toIsoString date)
+        defaultCss = [ ( "form-control", True ), ("max-sm-2", True), ("mb-2", True)]
+        attributes = if isDisabled then [(disabled True)] else []
+        datePickerSettings = {settings | inputClassList = defaultCss, inputAttributes = attributes}
     in
-    div [class "form-inline"][
-        div[][input[value taskDto.dueDate, type_ "text", class "form-control mx-sm-3 mb-2", disabled isActive][], 
-        button [onClick (ChangeTaskDueDate dto), class "btn btn-primary mb-1", hidden isActive][text "Change"]]
+    Html.form [class "form-inline", autocomplete False][
+        div[][
+            DatePicker.view task.dueDate.date datePickerSettings task.dueDate.datePicker 
+            |> Html.map (SetTaskDatePicker task), 
+            button [onClick (ChangeTaskDueDate dto), class "btn btn-primary mb-1", hidden isDisabled][text "Change"]]
     ]
 
 
-taskRow : TaskDto -> Html Msg
+taskRow : Task -> Html Msg
 taskRow task =
     tr []
         [ 

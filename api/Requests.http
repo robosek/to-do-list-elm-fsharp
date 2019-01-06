@@ -1,0 +1,36 @@
+###Add new task
+POST http://localhost:5000/api/task
+Content-Type: application/json
+
+{
+    "Name": "Buy a car!!",
+    "DueDate": "2019-07-12"
+}
+
+###Update task due date
+PUT http://localhost:5000/api/task/date
+Content-Type: application/json
+
+{
+    "Id": "471c43ba-c0ca-4da7-bb65-4454962ef31d",
+    "DueDate": "2022-03-12"
+}
+
+###Complete task
+PUT http://localhost:5000/api/task/complete
+Content-Type: application/json
+
+{
+    "Id": "2c51fd5d-8601-4388-a5d0-a8d8d6b6ad23"
+}
+
+# ###Remove task
+# DELETE http://localhost:5000/api/task/82e39b1d-b79b-4d76-a53b-cc8a42052984
+# Content-Type: application/json
+
+# ###Delete all tasks
+# DELETE  http://localhost:5000/api/tasks
+# Content-Type: application/json
+
+###Get all tasks
+GET http://localhost:5000/api/tasks

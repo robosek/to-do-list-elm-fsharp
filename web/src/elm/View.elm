@@ -3,7 +3,7 @@ module View exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Msgs exposing (Msg(..))
-import Models exposing (Model)
+import Models.Domain exposing (Model)
 import Tasks.List
 import Bootstrap.CDN as CDN
 import Bootstrap.Grid as Grid

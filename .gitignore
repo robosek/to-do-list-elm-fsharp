@@ -2,3 +2,4 @@ bin
 obj
 elm-stuff
 *.fsx
+web/node_modules

@@ -18,5 +18,5 @@ module Helpers =
     
     let tryConvertToString (dateTime:DateTime option) =
        match dateTime with
-       | Some date -> date.ToShortDateString()
+       | Some date -> date.ToString("yyyy-MM-dd")
        | None -> ""
