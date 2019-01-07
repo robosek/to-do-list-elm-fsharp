@@ -4,6 +4,7 @@ import RemoteData exposing (WebData)
 import Date exposing (Date, day, month, weekday, year)
 import DatePicker exposing (DateEvent(..), defaultSettings)
 import Time exposing (Weekday(..))
+import Html.Attributes exposing (..)
 
 type alias Model = 
     {
@@ -57,4 +58,5 @@ settings =
         , inputClassList = [ ( "form-control", True ) ]
         , inputName = Just "date"
         , inputId = Just "date-field"
+        , inputAttributes = [(required True)] 
     }

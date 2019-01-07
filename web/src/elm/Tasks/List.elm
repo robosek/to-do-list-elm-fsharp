@@ -73,16 +73,15 @@ changeDueDateForm task =
         date = Maybe.withDefault (Date.fromCalendarDate 1991 Sep 1) task.dueDate.date
         dto = ChangeTaskDueDateDto task.id (Date.toIsoString date)
         defaultCss = [ ( "form-control", True ), ("max-sm-2", True), ("mb-2", True)]
-        attributes = if isDisabled then [(disabled True)] else []
+        attributes = if isDisabled then settings.inputAttributes |> List.append [(disabled True)] else settings.inputAttributes
         datePickerSettings = {settings | inputClassList = defaultCss, inputAttributes = attributes}
     in
-    Html.form [class "form-inline", autocomplete False][
-        div[][
+    Html.form [autocomplete False][
+        div[class "form-inline"][
             DatePicker.view task.dueDate.date datePickerSettings task.dueDate.datePicker 
-            |> Html.map (SetTaskDatePicker task), 
-            button [onClick (ChangeTaskDueDate dto), class "btn btn-primary mb-1", hidden isDisabled][text "Change"]]
+            |> Html.map (SetTaskDatePicker task),
+            button [onClick (ChangeTaskDueDate dto), class "btn btn-primary mb-2", hidden isDisabled][text "Change"]]
     ]
-
 
 taskRow : Task -> Html Msg
 taskRow task =

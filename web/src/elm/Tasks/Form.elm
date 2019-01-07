@@ -24,7 +24,8 @@ viewForm model =
                         onInput SetTaskName,
                         value (getMaybeString model.newTask.name),
                         class "form-control",
-                        id "task-name"][]
+                        id "task-name",
+                        required True][]
                 ]
             ],
         div [class "col-auto"][
