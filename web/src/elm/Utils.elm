@@ -13,4 +13,4 @@ getMaybeString maybeText =
 updateDate: Model -> DatePicker.DatePicker -> (Maybe Date) -> Model
 updateDate model  datePicker maybeDate = 
     {tasks = model.tasks, newTask = {name = model.newTask.name, 
-    date = {date = maybeDate, datePicker = datePicker, datePickerFx = model.newTask.date.datePickerFx}}}
+    date = {date = maybeDate, datePicker = datePicker, datePickerFx = model.newTask.date.datePickerFx}}, listStatus = model.listStatus}

@@ -10,6 +10,7 @@ type alias Model =
     {
         tasks : WebData(List Task)
         ,newTask: NewTask
+        ,listStatus: ListStatus
     }
 
 type alias TaskDate = 
@@ -34,6 +35,10 @@ type alias Task =
         , dueDate: TaskDate
     }
 
+type ListStatus = 
+    OnlyNotCompleted
+    | All
+
 initialModel : Model
 initialModel =
     let
@@ -43,7 +48,8 @@ initialModel =
     in
     {
         tasks = RemoteData.Loading,
-        newTask = {name = Nothing, date = date }
+        newTask = {name = Nothing, date = date },
+        listStatus = All
     }
 
 settings : DatePicker.Settings

@@ -16,12 +16,12 @@ import Date exposing (Date, day, month, weekday, year)
 view : Model -> Html Msg
 view model =
     div []
-        [ 
-         maybeList model.tasks
+        [ checkbox model.listStatus,
+          maybeList model.tasks model.listStatus
         ]
 
-maybeList : WebData(List Task) -> Html Msg
-maybeList response = 
+maybeList : WebData(List Task) -> ListStatus -> Html Msg
+maybeList response listStatus = 
     case response of
         RemoteData.NotAsked ->
             text ""
@@ -30,14 +30,31 @@ maybeList response =
             text "Loading..."
 
         RemoteData.Success tasks ->
-            list tasks
+            list tasks listStatus
 
         RemoteData.Failure error ->
             text (Debug.toString error)
 
+checkbox : ListStatus -> Html Msg
+checkbox listStatus =
+    let
+        isChecked = case listStatus of 
+                    OnlyNotCompleted -> False
+                    All -> True   
+    in
+        div[class "form-check"][
+            input[class "form-check-input", type_ "checkbox", id "listCheckbox", checked isChecked, onClick (FilterTaskList listStatus)][],
+            label[class "form-check-label", for "listCheckbox"][text "All tasks"]
+        ]
 
-list : List Task -> Html Msg
-list tasks =
+list : List Task -> ListStatus -> Html Msg
+list tasks listStatus =
+    let
+        filteredTasks = case listStatus of
+                        OnlyNotCompleted -> tasks |> List.filter(\t -> t.isCompleted == False)
+                        All -> tasks
+    in
+    
     div [ class "p2" ]
         [ table [class "table"]
             [ thead [class "thead-dark"]
@@ -48,7 +65,7 @@ list tasks =
                     , th [] [ text "Deadline" ]
                     ]
                 ]
-            , tbody [] (List.map taskRow (tasks |> List.sortBy .name))
+            , tbody [] (List.map taskRow (filteredTasks |> List.sortBy .name))
             ]
         ]
 

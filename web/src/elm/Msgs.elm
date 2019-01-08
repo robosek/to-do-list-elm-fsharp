@@ -20,3 +20,4 @@ type Msg =
     | SetTaskDueDate String
     | SetNewTaskDatePicker DatePicker.Msg
     | SetTaskDatePicker Task DatePicker.Msg
+    | FilterTaskList ListStatus

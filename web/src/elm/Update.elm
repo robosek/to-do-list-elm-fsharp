@@ -70,3 +70,11 @@ update msg model =
                 updatedModel = { model | tasks = updatedTasks }
             in
             (updatedModel, Cmd.none)
+        FilterTaskList currentListStatus -> 
+            let
+                newListStatus = case currentListStatus of
+                                OnlyNotCompleted -> All
+                                All -> OnlyNotCompleted
+            in
+            ({model | listStatus = newListStatus}, Cmd.none)
+            
