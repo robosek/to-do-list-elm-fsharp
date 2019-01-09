@@ -12,9 +12,9 @@ import DatePicker exposing (defaultSettings)
 
 viewForm: Model -> Html Msg
 viewForm model =    
-    div[class "card text-center"][
+    div[class "card justify-content-center align-items-center"][
         div[class "card-body"][
-        Html.form[onSubmit AddNewTask , class "form-row align-items-center", autocomplete False]
+        Html.form[onSubmit AddNewTask , class "form-row", autocomplete False]
     [
         div[class "col-auto"][
             label[for "task-name", class "sr-only"][text "Name "],

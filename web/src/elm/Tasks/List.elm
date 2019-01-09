@@ -16,8 +16,24 @@ import Date exposing (Date, day, month, weekday, year)
 view : Model -> Html Msg
 view model =
     div []
-        [ checkbox model.listStatus,
+        [
           maybeList model.tasks model.listStatus
+        ]
+alert: AlertType -> String -> Html Msg
+alert alertType message =
+    let
+        alertCss  = case alertType of
+                    Error -> "text-center alert alert-error"
+                    Info -> "text-center alert alert-info"
+        
+    in
+        div[class alertCss][br[][], h1[][text message]]
+
+listWithCheckbox : List Task -> ListStatus -> Html Msg
+listWithCheckbox tasks listStatus =
+    div [][
+           checkbox listStatus,
+           list tasks listStatus
         ]
 
 maybeList : WebData(List Task) -> ListStatus -> Html Msg
@@ -27,13 +43,15 @@ maybeList response listStatus =
             text ""
 
         RemoteData.Loading ->
-            text "Loading..."
+            alert Info "Loading..."
 
         RemoteData.Success tasks ->
-            list tasks listStatus
+            case tasks |> List.isEmpty of
+            True -> alert Info "No tasks to do. List is empty... :-)"
+            False -> listWithCheckbox tasks listStatus
 
         RemoteData.Failure error ->
-            text (Debug.toString error)
+            alert Error (Debug.toString error)
 
 checkbox : ListStatus -> Html Msg
 checkbox listStatus =

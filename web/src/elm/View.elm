@@ -23,5 +23,6 @@ page : Model -> Html Msg
 page model =
     div[][
         viewForm model,
+        br[][],
         Tasks.List.view model
     ]

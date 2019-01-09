@@ -39,6 +39,10 @@ type ListStatus =
     OnlyNotCompleted
     | All
 
+type AlertType = 
+    Error
+    | Info
+
 initialModel : Model
 initialModel =
     let
