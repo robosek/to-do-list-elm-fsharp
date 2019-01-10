@@ -1,0 +1,6 @@
+paket-fiels
+Requests.http
+src/bin
+src/obj
+Dockerfile*
+.dockerignore
