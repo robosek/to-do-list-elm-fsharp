@@ -9,6 +9,8 @@ open Microsoft.Extensions.DependencyInjection
 open Giraffe
 open api.HttpHandlers
 open api.Models
+open api.TaskStore
+open api.EventStore
 
 // ---------------------------------
 // Web app
@@ -66,6 +68,8 @@ let configureApp (app : IApplicationBuilder) =
 let configureServices (services : IServiceCollection) =
     services.AddCors()    |> ignore
     services.AddGiraffe() |> ignore
+    EventStore.initialize() |> ignore
+    TaskStore.initialize() |> ignore
 
 let configureLogging (builder : ILoggingBuilder) =
     builder.AddFilter(fun l -> l.Equals LogLevel.Error)

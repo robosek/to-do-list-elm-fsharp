@@ -5,8 +5,17 @@ open api.Domain.Domain
 open Newtonsoft.Json
 
 module EventStore = 
+
+    [<Literal>]
+    let EventsFileName = "events.json"
+
+    let initialize () = 
+        match File.Exists(EventsFileName) with
+        | true -> ()
+        | false -> File.AppendAllText(EventsFileName, "[]")
+
     let loadEvents() =
-        File.ReadAllText "events.json"
+        File.ReadAllText EventsFileName
         |> JsonConvert.DeserializeObject<StoreEvent[]>
         |> Array.sortBy(fun event -> event.OperationDate)
 
@@ -14,4 +23,4 @@ module EventStore =
         loadEvents()
         |> fun storedEvents -> [|events; storedEvents|] |> Array.concat
         |> JsonConvert.SerializeObject
-        |> fun eventsJson -> File.WriteAllText("events.json", eventsJson)
+        |> fun eventsJson -> File.WriteAllText(EventsFileName, eventsJson)

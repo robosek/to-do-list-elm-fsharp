@@ -23,7 +23,7 @@ alert: AlertType -> String -> Html Msg
 alert alertType message =
     let
         alertCss  = case alertType of
-                    Error -> "text-center alert alert-error"
+                    Error -> "text-center alert alert-danger"
                     Info -> "text-center alert alert-info"
         
     in
