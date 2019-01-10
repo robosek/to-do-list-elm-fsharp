@@ -6,3 +6,4 @@ web/node_modules
 npm-debug.log
 events.json
 task.json
+.vscode
