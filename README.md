@@ -11,3 +11,10 @@ TODO API with endpoints:
 - `PUT` - update task due date
 - `PUT` - set task as completed
 - `GET` - all tasks
+
+### Run application
+The easiest way to launch this application is by using Docker compose.
+In main directory just run this command.
+```
+docker-compose -f docker-compose.yml up --build
+```

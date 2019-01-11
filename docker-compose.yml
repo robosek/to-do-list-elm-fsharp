@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  web:
+    build: 
+      context: web
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - api
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile
+    ports:
+      - 5000:80
