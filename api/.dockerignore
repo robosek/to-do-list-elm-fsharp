@@ -4,3 +4,5 @@ src/bin
 src/obj
 Dockerfile*
 .dockerignore
+events.json
+task.json

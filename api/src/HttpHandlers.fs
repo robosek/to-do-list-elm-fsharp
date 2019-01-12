@@ -15,7 +15,7 @@ module HttpHandlers =
     
     let private pipeline command = 
         command 
-        |> CommandHandler.handleCommand
+        |> CommandHandler.handle
         |> Result.bind(ReadSide.handleEvent)
 
     let getAllTasks =

@@ -5,6 +5,7 @@ open api.Aggregate.Aggregate
 open api.Helpers
 open api.EventStore
 open System
+open api.Validators.Validators
 
 module CommandHandler =
 
@@ -37,9 +38,15 @@ module CommandHandler =
         |> EventStore.saveEvents
         |> ignore
     
-    let handleCommand command = 
-        let currentState = getCurrentState()
-        command 
-        |> taskAggregate.Execute currentState
-        |> Result.bind(fun event -> append [|event|]
-                                    Ok(event))
+    let private handleCommand resultCommand = 
+        resultCommand
+        |> Result.bind(fun command ->  let currentState = getCurrentState()
+                                       command 
+                                       |> taskAggregate.Execute currentState
+                                       |> Result.bind(fun event -> append [|event|]
+                                                                   Ok(event)))
+
+    let handle command =
+        command
+        |> validate
+        |> handleCommand
